@@ -35,6 +35,7 @@ export default NuxtAuthHandler({
 
         if (credentials?.username === user.username && credentials?.password === user.password) {
           // Any object returned will be saved in `user` property of the JWT
+          console.log(user);
           return user
         } else {
           console.error('Warning: Malicious login attempt registered, bad credentials provided')
@@ -46,5 +47,8 @@ export default NuxtAuthHandler({
         }
       }
     })
-  ]
+  ],
+  pages: {
+    signIn: '/login'
+  }
 })
