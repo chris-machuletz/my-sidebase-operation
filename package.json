@@ -14,6 +14,7 @@
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "@nuxtjs/tailwindcss": "^6.4.0",
     "@sidebase/nuxt-auth": "^0.4.4",
+    "@types/bcrypt": "^5.0.0",
     "@types/node": "^18.11.18",
     "eslint": "^8.33.0",
     "nuxt": "^3.2.3",
@@ -22,6 +23,8 @@
   },
   "dependencies": {
     "@nuxtjs/auth-next": "^5.0.0-1667386184.dfbbb54",
+    "bcrypt": "^5.1.0",
+    "mongoose": "^7.1.1",
     "next-auth": "^4.21.1"
   }
 }

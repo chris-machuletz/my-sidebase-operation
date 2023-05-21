@@ -8,6 +8,7 @@
         Read our documentation <a href="https://sidebase.io/sidebase/welcome" target="_blank">here</a>.
         Get started in no time with the following amazing modules:
       </p>
+      <nuxt-link to="/login">Login</nuxt-link>
     </div>
     <div class="cards">
       <div class="card auth__card">
