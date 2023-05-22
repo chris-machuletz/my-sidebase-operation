@@ -64,6 +64,19 @@ export default NuxtAuthHandler({
     })
   ],
   callbacks: {
+		async createUser(params) {
+			const { user } = params;
+
+			// Assign default rights to the user when registering
+			user.rights = ['create', 'read', 'update', 'delete'];
+
+			// Save the user to the database
+			const userModel = new UserModel(user);
+			await userModel.save();
+
+			// Return the modified user object
+			return user;
+		},
     async session(params) {
       const { session, user } = params;
 
@@ -73,7 +86,7 @@ export default NuxtAuthHandler({
       if (user) {
         session.user = {
           name: user.username,
-          email: user.email
+          email: user.email,
           // Add any other relevant properties
         };
       }

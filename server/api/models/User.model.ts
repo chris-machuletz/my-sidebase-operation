@@ -7,7 +7,8 @@ export interface UserDocument extends Document {
     email: string;
     password: string;
     wishList: Array<String> | undefined;
-    key: String | undefined;
+		rights: string[];
+		emailVerified: boolean;
     comparePassword: (password: string) => Promise<boolean>;
 }
 
@@ -33,6 +34,14 @@ const schema: mongoose.Schema = new mongoose.Schema<UserDocument>(
             required: true,
             default: [],
         },
+				rights: {
+					type: [String],
+					default: ['create', 'read', 'update', 'delete'],
+				},
+				emailVerified: {
+					type: Boolean,
+					default: false
+				}
     },
     { timestamps: true },
 );

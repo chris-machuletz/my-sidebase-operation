@@ -16,7 +16,7 @@ export default defineEventHandler(async(event) => {
 
         try {
             const { username, password, email } = body as IRequestBody;
-            
+
             console.log('provided credentials', username, password, email);
 
             const existing = await UserModel.findOne({
@@ -40,7 +40,8 @@ export default defineEventHandler(async(event) => {
             const newUser = new UserModel({
                 username,
                 email,
-                password: hashedPassword
+                password: hashedPassword,
+								rights: ['create', 'read', 'update', 'delete']
             });
 
             await newUser.save();
@@ -49,24 +50,6 @@ export default defineEventHandler(async(event) => {
                 status: 201,
                 message: 'User registered successfully'
             }
-            
-        //     // Hash the password
-        //     const salt = 'f844b09ff50c';
-        //     const sessionKey = await bcrypt.genSalt(10);
-
-        //     const hashedPassword = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
-        //     const key = crypto.createCipher('aes-128-cbc', sessionKey);
-        //     let encryptedEmail = key.update(email, 'utf-8', 'hex');
-        //     encryptedEmail += key.final('hex');
-
-        //     console.log('hashed password', hashedPassword, 'email cipher', key, 'encrypted email', encryptedEmail);
-
-        //     const createdUser = await userController.createUser(username, hashedPassword, encryptedEmail, key);
-
-        //     return {
-        //         status: 201,
-        //         body: createdUser
-        //     }
         } catch (error: any) {
             return {
                 code: 'ERROR',
