@@ -2,7 +2,8 @@
   <div class="main-container">
     <h1>Home</h1>
     <nuxt-link to="/login">Login</nuxt-link>
-    <StoryblokComponent v-if="story" :blok="story.content" />
+    <StoryblokComponent v-if="story" v-for=" blok in story.content.body" :blok="blok" />
+    {{ story.content.body }}
   </div>
 </template>
 
