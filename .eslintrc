@@ -5,14 +5,18 @@
     "node": true
   },
   "extends": [
-    "@nuxtjs/eslint-config-typescript"
+    "@nuxtjs/eslint-config-typescript",
+    "plugin:vue/vue3-recommended",
+    "prettier"
   ],
+  "plugins": [ "vue", "html" ],
   "overrides": [
     {
       "files": [
         "./server/**/*.ts"
       ],
       "rules": {
+        "vue/html-indent": ["error", "tab"],
         "no-console": [
           "error",
           {

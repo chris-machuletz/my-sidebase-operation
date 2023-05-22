@@ -33,7 +33,7 @@ export default NuxtAuthHandler({
       },
       authorize: async (credentials: any) => {
         const { username, password } = credentials;
-      
+
         try {
           const user: UserDocument | null = await UserModel.findOne({ username }).exec();
           console.log('USER', user);
@@ -41,16 +41,16 @@ export default NuxtAuthHandler({
             console.error('Warning: User not found');
             return null;
           }
-      
+
           const isPasswordMatch = await bcrypt.compare(password, user.password);
-      
+
           if (!isPasswordMatch) {
             console.error('Warning: Incorrect password');
             return null;
           }
-      
+
           console.log('credentials correct');
-            
+
           return {
             id: user._id.toString(),
             name: user.username as string,
@@ -60,7 +60,7 @@ export default NuxtAuthHandler({
           console.error('Error: ', error);
           return null;
         }
-      }      
+      }
     })
   ],
   callbacks: {
@@ -69,7 +69,7 @@ export default NuxtAuthHandler({
 
       console.log('SESSION', session);
       console.log('USER', user);
-    
+
       if (user) {
         session.user = {
           name: user.username,
@@ -77,12 +77,13 @@ export default NuxtAuthHandler({
           // Add any other relevant properties
         };
       }
-    
+
       return session;
     },
   },
   pages: {
     signIn: '/login',
     newUser: '/register',
+		signOut: '/',
   }
 })

@@ -1,10 +1,13 @@
 <template>
   <div>
-    <nuxt-link to="/login">Login</nuxt-link>
-    <div>I'm protected! Session data: {{ data.user }}</div>
-    <button class="rounded-xl shadow-xl p-2 m-2" @click="signOut()">
-      Sign Out
-    </button>
+    <nuxt-link v-if="!data" to="/login">Login</nuxt-link>
+    <div v-if="data">
+      <h1>User Profile</h1>
+      <div>Session data: {{ data.user }}<br>Logged in until {{ data.expires }}</div>
+      <button class="rounded-xl shadow-xl p-2 m-2" @click="signOut()">
+        Sign Out
+      </button>
+    </div>
   </div>
 </template>
 

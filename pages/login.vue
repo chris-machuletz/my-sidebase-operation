@@ -6,7 +6,7 @@
     <div class="sign-in" v-if="!data">
       <p>Sign-In Options:</p>
       <button @click="handleSignIn('github')">Github</button>
-  
+
       <form @submit.prevent="login">
             <div>
                 <label for="username">Username:</label>
@@ -29,16 +29,16 @@
 definePageMeta({
   auth: {
     unauthenticatedOnly: true,
-    navigateAuthenticatedTo: '/',
+    navigateAuthenticatedTo: '/profile'
   },
 });
 
-const { data, signIn, signOut } = useSession();
-// console.log(data, signIn);
+const { status, data, signIn, signOut } = useAuth();
 const route = useRoute();
 const router = useRouter();
 
 console.log('data', data,'signin', signIn, 'signout', signOut);
+console.log(status.value)
 
 let username: string = '';
 let password: string = '';
@@ -53,53 +53,20 @@ const login = async () => {
     // Manually save the current route before signing in
     const currentRoute = route.fullPath;
 
-    await signIn('credentials', credentials);
+    console.warn('CURRENT ROUTE:', currentRoute);
 
-    // Check if the route has changed after signing in
-    if (route.fullPath === currentRoute) {
-      // If the route hasn't changed, manually navigate to the desired page
-      const intendedRoute = route.query.callbackUrl as string;
-      const redirectUrl = intendedRoute || '/protected';
-      router.push(redirectUrl);
+    try {
+      await signIn('credentials', credentials)
+    } catch (error) {
+      console.log(error);
     }
+
   } catch (error) {
     console.log('Authentication failed:', error);
   }
 };
 
-const handleSubmit = async function (event: any) {
 
-
-
-
-  try {
-    console.log('response:', response);
-    const intendedRoute = route.query.callbackUrl as string;
-    const redirectUrl = intendedRoute || '/'; // Change '/protected' to your default route
-    // console.log(redirectUrl);
-    // console.log(route)
-  } catch (error) {
-      console.log('Authentication failed');
-
-  }
-
-
-
-  // if (response) {
-  //   console.log('response', response);
-  //   // Authentication successful
-  //   // Redirect the user to the intended URL or a default route
-  //   const intendedRoute = route.query.callbackUrl as string;
-  //   const redirectUrl = intendedRoute || '/'; // Change '/protected' to your default route
-  //   console.log(redirectUrl);
-  //   console.log(route)
-  //   router.push('/protected');
-  // } else {
-  //   // Authentication failed
-  //   // Display an error message or take appropriate action
-  //   console.log('Authentication failed');
-  // }
-};
 
 const handleSignIn = async (provider: string, options: Record<string, string> = {}) => {
   if (provider === 'github') {
