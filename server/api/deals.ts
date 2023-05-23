@@ -1,80 +1,42 @@
 import DealModel from './models/Deal.model';
 import chalk from 'chalk';
+import { getServerSession } from '#auth'
 // import { useAuthorization } from '../../composables/useAuthorization';
 
 interface IRequestBody {
-  title: string;
-  imageUrls: string[];
-  currentPrice: number;
-  regularPrice: number;
-  expirationDate: Date;
-  url: string;
-  description: string;
-  category: string;
+	title: string;
+	imageUrls: string[];
+	currentPrice: number;
+	regularPrice: number;
+	expirationDate: Date;
+	url: string;
+	description: string;
+	category: string;
 }
 
 export default defineEventHandler(async (event) => {
 
-  if (event.node.req.method === 'POST') {
-    console.log(chalk.green('POST'), '/api/deals');
 
-    const body = await readBody(event) as IRequestBody;
-		// console.log(chalk.red(session));
-		// let _session;
-		// const session = await $fetch('/api/session', { method: 'GET' }).then(res => _session = res);
-		// console.log('session', session, '_session', _session);
+	if (event.node.req.method === 'POST') {
+		console.log(chalk.green('POST'), '/api/deals');
 
-    try {
+		const body = await readBody(event) as IRequestBody;
 
+		const session = await getServerSession(event);
+		console.log('session', chalk.blue(JSON.stringify(session)));
+		if (!session) {
+			return { status: 'unauthenticated!' }
+		}
 
-			// const { canCreate } = useAuthorization(event.session);
+		const { title } = body;
 
-			// if(!canCreate) {
-			// 	return {
-			// 		status: 403,
-			// 		message: 'Forbidden'
-			// 	}
-			// }
+		const newDeal = new DealModel({
+			title,
+		});
 
-      // const {
-      //   title,
-      //   // imageUrls,
-      //   // currentPrice,
-      //   // regularPrice,
-      //   // expirationDate,
-      //   // url,
-      //   // description,
-      //   // category,
-      // } = body;
+		await newDeal.save();
 
-      // // console.log('provided deal details:', title, imageUrls, currentPrice, regularPrice, expirationDate, url, description, category);
-      // console.log('provided deal details:', title);
+		return { status: '201', message: 'Deal created successfully', newDeal };
 
-      // const newDeal = new DealModel({
-      //   title,
-      //   // imageUrls,
-      //   // currentPrice,
-      //   // regularPrice,
-      //   // expirationDate,
-      //   // url,
-      //   // description,
-      //   // category,
-      // });
-
-      // await newDeal.save();
-
-      return {
-        status: 201,
-        message: 'Deal created successfully',
-      };
-    } catch (error: any) {
-      return {
-        code: 'ERROR',
-        message: error.message,
-      };
-    }
-  } else {
-    event.node.res.statusCode = 405;
-    event.node.res.end('Method Not Allowed');
-  }
+	}
 });
