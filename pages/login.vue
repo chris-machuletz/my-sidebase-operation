@@ -7,7 +7,7 @@
       <p>Sign-In Options:</p>
       <button @click="handleSignIn('github')">Github</button>
 
-      <form @submit.prevent="login">
+      <form>
             <div>
                 <label for="username">Username:</label>
                 <input type="text" id="username" v-model="username" required />
@@ -16,7 +16,7 @@
                 <label for="password">Password:</label>
                 <input type="password" id="password" v-model="password" required />
             </div>
-            <button type="submit" @click.prevent="login">Log in</button>
+            <button type="submit" @click.prevent="login({ username, password, callbackUrl: '/'})">Log in</button>
         </form>
 
     </div>
@@ -25,45 +25,52 @@
 </template>
 
 <script setup lang="ts">
+import { definePageMeta, useAuth, navigateTo } from '#imports'
+
 
 definePageMeta({
   auth: {
     unauthenticatedOnly: true,
-    navigateAuthenticatedTo: '/profile'
+    navigateAuthenticatedTo: '/'
   },
 });
 
-const { status, data, signIn, signOut } = useAuth();
-const route = useRoute();
-const router = useRouter();
-
-console.log('data', data,'signin', signIn, 'signout', signOut);
-console.log(status.value)
+const { data, signIn, signOut } = useAuth();
 
 let username: string = '';
 let password: string = '';
 
-const login = async () => {
-  try {
-    const credentials = {
-      username,
-      password,
-    };
+const login = async ({ username, password, callbackUrl }: { username: string, password: string, callbackUrl: string }) => {
 
-    // Manually save the current route before signing in
-    const currentRoute = route.fullPath;
+  console.log('credentials', username, password, 'callbackUrl', callbackUrl);
 
-    console.warn('CURRENT ROUTE:', currentRoute);
+  const { error, url } = await signIn('credentials', { username, password, callbackUrl, redirect: false});
 
-    try {
-      await signIn('credentials', credentials)
-    } catch (error) {
-      console.log(error);
-    }
-
-  } catch (error) {
-    console.log('Authentication failed:', error);
+  if (error) {
+    alert('Error: Bad Credentials')
+  } else {
+    return navigateTo(url, { external: true })
   }
+  // try {
+  //   const credentials = {
+  //     username,
+  //     password,
+  //   };
+
+  //   // Manually save the current route before signing in
+  //   const currentRoute = route.fullPath;
+
+  //   console.warn('CURRENT ROUTE:', currentRoute);
+
+  //   try {
+  //     await signIn('credentials', credentials)
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+
+  // } catch (error) {
+  //   console.log('Authentication failed:', error);
+  // }
 };
 
 

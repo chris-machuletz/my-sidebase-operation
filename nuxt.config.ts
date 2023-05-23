@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     MONGO_URI: process.env.MONGO_URI,
   },
-	debug: true,
+	debug: false,
 	css: [
 		'@fortawesome/fontawesome-svg-core/styles.css',
 		'@/assets/styles/main.scss'
@@ -17,6 +17,10 @@ export default defineNuxtConfig({
   ],
 	auth: {
 		baseURL: 'http://localhost:3000',
+		provider: {
+			type: 'authjs'
+		},
+		globalAppMiddleware: false,
 	},
   typescript: {
     shim: false

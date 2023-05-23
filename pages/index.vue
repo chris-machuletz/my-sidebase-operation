@@ -13,7 +13,7 @@ definePageMeta({
 });
 const slug = useRoute().params.slug;
 
-console.log(slug);
+console.log('Slug', slug);
 
 const story = await useAsyncStoryblok(
 slug && slug.length > 0 ? (slug as string[]).join('/') : 'home',

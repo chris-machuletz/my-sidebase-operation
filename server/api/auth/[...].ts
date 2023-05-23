@@ -3,15 +3,11 @@ import GithubProvider from 'next-auth/providers/github'
 import { NuxtAuthHandler } from '#auth'
 import UserModel, { UserDocument } from '../models/User.model'
 import bcrypt from 'bcrypt';
-import { AdapterUser } from 'next-auth/adapters';
-
-interface AuthenticatedUser extends AdapterUser {
-  username: string;
-}
+import chalk from 'chalk';
 
 export default NuxtAuthHandler({
   // TODO: SET A STRONG SECRET, SEE https://sidebase.io/nuxt-auth/configuration/nuxt-auth-handler#secret
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.AUTH_SECRET ?? 'test-123',
   // TODO: ADD YOUR OWN AUTHENTICATION PROVIDER HERE, READ THE DOCS FOR MORE: https://sidebase.io/nuxt-auth
   providers: [
     // @ts-expect-error You need to use .default here for it to work during SSR. May be fixed via Vite at some point
@@ -36,20 +32,23 @@ export default NuxtAuthHandler({
 
         try {
           const user: UserDocument | null = await UserModel.findOne({ username }).exec();
-          console.log('USER', user);
           if (!user) {
-            console.error('Warning: User not found');
+						console.log(chalk.red('✖'), 'User not found')
+            // console.error('Warning: User not found');
             return null;
           }
 
           const isPasswordMatch = await bcrypt.compare(password, user.password);
 
           if (!isPasswordMatch) {
-            console.error('Warning: Incorrect password');
+            // console.error('Warning: Incorrect password');
+						console.log(chalk.red('✖'), 'Incorrect password');
             return null;
           }
 
-          console.log('credentials correct');
+					console.log(chalk.green('✔'), 'Credentials correct');
+          // console.log('credentials correct');
+					console.log(user);
 
           return {
             id: user._id.toString(),
@@ -57,31 +56,18 @@ export default NuxtAuthHandler({
             email: user.email
           };
         } catch (error) {
-          console.error('Error: ', error);
+					console.log(chalk.red('✖'), 'Error: Bad credentials', error)
+          // console.error('Error: ', error);
           return null;
         }
-      }
+      },
     })
   ],
   callbacks: {
-		async createUser(params) {
-			const { user } = params;
+    async session({ session, token, user}) {
+      // const { session, user } = params;
 
-			// Assign default rights to the user when registering
-			user.rights = ['create', 'read', 'update', 'delete'];
-
-			// Save the user to the database
-			const userModel = new UserModel(user);
-			await userModel.save();
-
-			// Return the modified user object
-			return user;
-		},
-    async session(params) {
-      const { session, user } = params;
-
-      console.log('SESSION', session);
-      console.log('USER', user);
+      console.log('SESSION', session, 'USER', user);
 
       if (user) {
         session.user = {
