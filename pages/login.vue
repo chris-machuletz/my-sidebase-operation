@@ -51,26 +51,6 @@ const login = async ({ username, password, callbackUrl }: { username: string, pa
   } else {
     return navigateTo(url, { external: true })
   }
-  // try {
-  //   const credentials = {
-  //     username,
-  //     password,
-  //   };
-
-  //   // Manually save the current route before signing in
-  //   const currentRoute = route.fullPath;
-
-  //   console.warn('CURRENT ROUTE:', currentRoute);
-
-  //   try {
-  //     await signIn('credentials', credentials)
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-
-  // } catch (error) {
-  //   console.log('Authentication failed:', error);
-  // }
 };
 
 

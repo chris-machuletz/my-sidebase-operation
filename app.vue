@@ -55,9 +55,6 @@
           refresh session
         </button>
       </div>
-      <!-- <hr>
-      <p>The page content of "{{ route.path }}"</p>
-      <NuxtPage /> -->
     </div>
   </div>
 </template>

@@ -1,7 +1,7 @@
 import DealModel from './models/Deal.model';
 import chalk from 'chalk';
-import { getServerSession } from '#auth'
-// import { useAuthorization } from '../../composables/useAuthorization';
+import { getServerSession } from '#auth';
+import cheerio, { load } from 'cheerio';
 
 interface IRequestBody {
 	title: string;
@@ -25,13 +25,21 @@ export default defineEventHandler(async (event) => {
 		const session = await getServerSession(event);
 		console.log('session', chalk.blue(JSON.stringify(session)));
 		if (!session) {
-			return { status: 'unauthenticated!' }
+			return {
+				statusCode: 403,
+				status: 'Unauthenticated!'
+			}
 		}
 
-		const { title } = body;
+		const { title, url } = body;
+
+		// TODO intercept crawler here
+
+		return { message: 'TODO add crawler' }
 
 		const newDeal = new DealModel({
 			title,
+			url
 		});
 
 		await newDeal.save();

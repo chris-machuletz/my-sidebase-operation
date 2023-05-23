@@ -65,9 +65,6 @@ export default NuxtAuthHandler({
   ],
   callbacks: {
     async session({ session, token, user}) {
-      // const { session, user } = params;
-
-      console.log('SESSION', session, 'USER', user);
 
       if (user) {
         session.user = {
