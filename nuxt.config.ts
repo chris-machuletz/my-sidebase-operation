@@ -1,3 +1,6 @@
+import path from 'path';
+import fs from 'fs';
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   runtimeConfig: {
@@ -11,12 +14,18 @@ export default defineNuxtConfig({
   nitro: {
 		plugins: ["@/server/db/index.ts"],
 	},
+	devServer: {
+    https: {
+      key: 'localhost-key.pem',
+      cert: 'localhost.pem'
+    }
+  },
   modules: [
     '@sidebase/nuxt-auth',
 		['@storyblok/nuxt', { accessToken: process.env.STORYBLOK_API_TOKEN }],
   ],
 	auth: {
-		baseURL: 'http://localhost:3000',
+		baseURL: 'https://localhost:3000',
 		provider: {
 			type: 'authjs'
 		},
