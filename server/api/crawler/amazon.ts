@@ -5,19 +5,6 @@ import followRedirects from 'follow-redirects';
 export async function crawlAmazon(url: string, domain: string) {
 	console.warn(chalk.blue('Crawl URL'), chalk.green(url));
 
-	const { http, https } = followRedirects;
-
-	const options = {
-		followRedirects: true, // Enable automatic following of redirects
-		maxRedirects: 10, // Set the maximum number of redirects to follow
-		timeout: 5000,
-		headers: {
-			'User-Agent': 'Mozilla/5.0', // Set a user agent header to avoid being blocked
-		},
-	};
-
-	const httpModule = url.startsWith('https://') ? https : http;
-
 	let finalUrl: string = url;
 
 	// sanitize url from affiliate stuff
@@ -26,25 +13,9 @@ export async function crawlAmazon(url: string, domain: string) {
 
 	console.log('start fetching...');
 
-	sanitizeUrl(finalUrl);
+	const sanitizedUrl: string = sanitizeUrl(finalUrl);
 
-
-
-	// await new Promise((resolve, reject) => {
-	// 	console.log('in promise');
-	// 	try {
-	// 		httpModule.get(url, options, (res) => {
-	// 			finalUrl = sanitizeUrl(res.responseUrl);
-	// 		}).on('error', (err) => {
-	// 			reject(err);
-	// 		});
-	// 	} catch (error) {
-	// 		console.error('Error during HTTP request:', error);
-	// 		reject(error);
-	// 	}
-	// });
-
-	const data: string = await $fetch(sanitizeUrl(finalUrl), {
+	const data: string = await $fetch(sanitizedUrl, {
 		method: 'GET'
 	});
 
@@ -59,7 +30,8 @@ export async function crawlAmazon(url: string, domain: string) {
 	return {
 		title,
 		price,
-		basisPrice
+		basisPrice,
+		url: sanitizedUrl
 		// message: 'test'
 	}
 }
