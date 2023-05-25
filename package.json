@@ -3,7 +3,7 @@
   "name": "rabatt-check",
   "scripts": {
     "build": "nuxt build",
-		"dev": "nuxt dev --https --ssl-cert localhost.pem --ssl-key localhost-key.pem",
+    "dev": "nuxt dev --https --ssl-cert localhost.pem --ssl-key localhost-key.pem",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -19,6 +19,7 @@
     "@types/bcrypt": "^5.0.0",
     "@types/follow-redirects": "^1.14.1",
     "@types/node": "^18.11.18",
+    "@types/tough-cookie": "^4.0.2",
     "eslint": "^8.33.0",
     "eslint-plugin-nuxt": "^4.0.0",
     "eslint-plugin-vue": "^9.13.0",
@@ -39,6 +40,8 @@
     "cheerio": "^1.0.0-rc.12",
     "follow-redirects": "^1.15.2",
     "mongoose": "^7.1.1",
-    "next-auth": "^4.21.1"
+    "next-auth": "^4.21.1",
+    "puppeteer": "^20.4.0",
+    "tough-cookie": "^4.1.2"
   }
 }

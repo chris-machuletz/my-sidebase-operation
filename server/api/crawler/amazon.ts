@@ -1,42 +1,73 @@
 import { load } from 'cheerio';
 import chalk from 'chalk';
 import followRedirects from 'follow-redirects';
+import { CookieJar } from 'tough-cookie';
+import puppeteer from 'puppeteer';
 
 export async function crawlAmazon(url: string, domain: string) {
-	console.warn(chalk.blue('Crawl URL'), chalk.green(url));
+  console.warn(chalk.blue('Crawl URL'), chalk.green(url));
 
-	let finalUrl: string = url;
+  try {
+    const finalUrl = await fetchFinalUrl(url);
+    const data = await fetchData(finalUrl);
+    const $ = load(data);
+    const title = $('#productTitle').text().trim();
+    const price = $('.priceToPay span.a-offscreen').first().text();
+    const basisPrice = $('.basisPrice span.a-offscreen').first().text();
 
-	// sanitize url from affiliate stuff
-	// https://www.amazon.de/Generisch-Wildkamera-Bewegungsaktiviert-Wasserdicht-%C3%9Cberwachung/dp/B0BT9FLDYZ?_encoding=UTF8&_encoding=UTF8&pd_rd_w=TCRsD&content-id=amzn1.sym.c223b33c-1fbb-4e75-88a6-cd9da8cc49e6&pf_rd_p=c223b33c-1fbb-4e75-88a6-cd9da8cc49e6&pf_rd_r=C730VXQA4B2GQ4QQ273V&pd_rd_wg=gI8jG&pd_rd_r=51d2af40-41f6-41f7-b1dc-4b73eb4c612f&linkCode=ll1&tag=excelstart-21&linkId=89734013dceb077107d47f778f17be59&language=de_DE&ref_=as_li_ss_tl
-	// https://amzn.to/3BSmdZi
+    console.log(chalk.blue('Title:', title));
+    console.log(chalk.blue('Price:', price));
+    console.log(chalk.blue('BasisPrice:', basisPrice));
 
-	console.log('start fetching...');
-
-	const sanitizedUrl: string = sanitizeUrl(finalUrl);
-
-	const data: string = await $fetch(sanitizedUrl, {
-		method: 'GET'
-	});
-
-	const $ = load(data);
-	const title = $('#productTitle').text().trim();
-	const price = $('.priceToPay span.a-offscreen').first().text();
-	const basisPrice = $('.basisPrice span.a-offscreen').first().text();
-
-	console.log(chalk.blue('Title:', title));
-	console.log(chalk.blue('Price:', price));
-	console.log(chalk.blue('BasisPrice:', basisPrice));
-	return {
-		title,
-		price,
-		basisPrice,
-		url: sanitizedUrl
-		// message: 'test'
-	}
+    return {
+      title,
+      price,
+      basisPrice,
+      url: sanitizedUrl(finalUrl),
+    };
+  } catch (error) {
+    console.error('Error during crawling:', error);
+    throw new Error('Failed to crawl data from Amazon.');
+  }
 }
 
-export function sanitizeUrl(url: string): string {
-	console.log(`${url.split('?')[0]}?tag=${process.env.AMAZON_PARTNER_ID}`);
-	return `${url.split('?')[0]}?tag=${process.env.AMAZON_PARTNER_ID}`;
+async function fetchFinalUrl(url: string): Promise<string> {
+  const { http, https } = followRedirects;
+  const httpModule = url.startsWith('https://') ? https : http;
+
+  const options = {
+    followRedirects: true,
+    maxRedirects: 10,
+    timeout: 5000,
+    headers: {
+      'User-Agent': 'Mozilla/5.0',
+    },
+  };
+
+  return new Promise<string>((resolve, reject) => {
+    httpModule
+      .get(url, options, (res) => {
+        resolve(res.responseUrl || url);
+      })
+      .on('error', (err) => {
+        reject(err);
+      });
+  });
+}
+
+async function fetchData(url: string): Promise<string> {
+  const browser = await puppeteer.launch({ headless: 'new' });
+  const page = await browser.newPage();
+
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  const data = await page.content();
+
+  await browser.close();
+
+  return data;
+}
+
+function sanitizedUrl(url: string): string {
+  console.log(`${url.split('?')[0]}?tag=${process.env.AMAZON_PARTNER_ID}`);
+  return `${url.split('?')[0]}?tag=${process.env.AMAZON_PARTNER_ID}`;
 }
