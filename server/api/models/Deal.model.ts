@@ -3,10 +3,10 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface DealDocument extends Document {
 	title: string;
 	// imageUrls: string[];
-	// currentPrice: number;
-	// regularPrice: number;
+	price: String;
+	basisPrice: String;
 	// expirationDate: Date;
-	// url: string;
+	url: string;
 	// description: string;
 	// category: string;
 }
@@ -14,10 +14,10 @@ export interface DealDocument extends Document {
 const DealSchema: Schema = new Schema({
 	title: { type: String, required: true },
 	// imageUrls: [{ type: String, required: true }],
-	// currentPrice: { type: Number, required: true },
-	// regularPrice: { type: Number, required: true },
+	price: { type: String, required: true },
+	basisPrice: { type: String, required: true },
 	// expirationDate: { type: Date, required: true },
-	// url: { type: String, required: true },
+	url: { type: String, required: true },
 	// description: { type: String, required: true },
 	// category: { type: String, required: true },
 });

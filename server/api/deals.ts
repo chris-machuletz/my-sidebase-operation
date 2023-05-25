@@ -5,17 +5,16 @@ import cheerio, { load } from 'cheerio';
 
 interface IRequestBody {
 	title: string;
-	imageUrls: string[];
-	currentPrice: number;
-	regularPrice: number;
-	expirationDate: Date;
+	// imageUrls: string[];
+	price: number;
+	basisPrice: number;
+	// expirationDate: Date;
 	url: string;
-	description: string;
-	category: string;
+	// description: string;
+	// category: string;
 }
 
 export default defineEventHandler(async (event) => {
-
 
 	if (event.node.req.method === 'POST') {
 		console.log(chalk.green('POST'), '/api/deals');
@@ -23,7 +22,7 @@ export default defineEventHandler(async (event) => {
 		const body = await readBody(event) as IRequestBody;
 
 		const session = await getServerSession(event);
-		console.log('session', chalk.blue(JSON.stringify(session)));
+
 		if (!session) {
 			return {
 				statusCode: 403,
@@ -31,20 +30,23 @@ export default defineEventHandler(async (event) => {
 			}
 		}
 
-		const { title, url } = body;
-
-		// TODO intercept crawler here
-
-		return { message: 'TODO add crawler' }
+		const { title, url, price, basisPrice } = body;
 
 		const newDeal = new DealModel({
 			title,
-			url
+			url,
+			price,
+			basisPrice
 		});
 
-		await newDeal.save();
+		try {
+			await newDeal.save();
+			return { statusCode: 201, message: 'Deal created successfully', newDeal };
+		} catch (error) {
+			throw error;
+		}
 
-		return { status: '201', message: 'Deal created successfully', newDeal };
+
 
 	}
 });
