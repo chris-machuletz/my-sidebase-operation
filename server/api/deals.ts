@@ -8,7 +8,7 @@ interface IRequestBody {
 	// imageUrls: string[];
 	price: number;
 	basisPrice: number;
-	// expirationDate: Date;
+	expirationDate: Date;
 	url: string;
 	// description: string;
 	// category: string;
@@ -30,13 +30,14 @@ export default defineEventHandler(async (event) => {
 			}
 		}
 
-		const { title, url, price, basisPrice } = body;
+		const { title, url, price, basisPrice, expirationDate } = body;
 
 		const newDeal = new DealModel({
 			title,
 			url,
 			price,
-			basisPrice
+			basisPrice,
+			expirationDate
 		});
 
 		try {

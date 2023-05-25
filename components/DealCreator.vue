@@ -2,7 +2,11 @@
   <div>
     <DealCreatorUrlForm @next="fetchData" />
     Loading: {{ loading }}<br><br>
-    <DealCreatorOverview v-if="data" :data="data" @save="saveData"></DealCreatorOverview>
+    <div v-if="data">
+      <DealCreatorOverview :data="data" v-model="data"></DealCreatorOverview>
+      <DealCreatorExpDate v-if="data" :data="data" :start-date="startDate" :end-date="endDate" @date-selected="handleDateSelected" />
+      <button @click="onCreateDeal" v-if="expirationDate">Save</button>
+    </div>
     Step: {{ step }}
   </div>
 </template>
@@ -15,14 +19,17 @@ definePageMeta({ middleware: 'auth' });
 const step = ref(1);
 const { data, loading, fetchData } = useCrawler();
 
-const saveData = async (formData: any) => {
-  data.value = formData;
-  console.log(data.value);
-  step.value = 1; // Move back to the first step
+const startDate = '2023-01-01'; // Example start date
+const endDate = '2023-12-31'; // Example end date
+const expirationDate = ref('');
 
-  const { title, url, price, basisPrice } = formData;
+const handleDateSelected = (date: string) => {
+  expirationDate.value = date;
+};
 
-  console.log(formData.url);
+const onCreateDeal = async () => {
+
+  const { title, url, price, basisPrice } = data.value;
 
   try {
     const response = await useFetch('/api/deals', {
@@ -31,7 +38,8 @@ const saveData = async (formData: any) => {
         title,
         url,
         basisPrice,
-        price
+        price,
+        expirationDate: expirationDate.value
       },
     });
 

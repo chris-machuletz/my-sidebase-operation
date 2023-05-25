@@ -1,11 +1,9 @@
 <template>
   <div>
-    <input type="text" :value="data?.title" :disabled="!!data" />
-    <input type="text" :value="data?.price" :disabled="!!data" />
-    <input type="text" :value="data?.basisPrice" :disabled="!!data" />
-    <p>{{ data?.url }}</p>
-
-    <button @click="save">Save</button>
+    <input type="text" v-model="formData.title" @change="onInputChange($event)" data-id="title" :disabled="isDataAvailable" />
+    <input type="text" v-model="formData.price" @change="onInputChange($event)" data-id="price" :disabled="isDataAvailable" />
+    <input type="text" v-model="formData.basisPrice" @change="onInputChange($event)" data-id="basisPrice" :disabled="isDataAvailable" />
+    <p>{{ formData.url }}</p>
   </div>
 </template>
 
@@ -21,8 +19,23 @@ const props = defineProps({
 
 const emit = defineEmits(['save'])
 
-const save = () => {
-  emit('save', props.data);
-  // Perform save operation or emit an event with the updated data
+const formData = ref(props.data);
+
+console.log('FORM DATA', formData);
+
+const isDataAvailable = !!props.data;
+
+watch(() => props.data, (newData) => {
+  if (newData) {
+    formData.value = { ...newData };
+  }
+});
+
+const onInputChange = (event) => {
+  const field = event.target.getAttribute('data-id');
+  const value = event.target.value;
+  formData.value[field] = value;
+  console.log(field, value, formData.value)
+  emit('save', formData.value);
 };
 </script>

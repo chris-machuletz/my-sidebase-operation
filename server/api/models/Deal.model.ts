@@ -5,7 +5,7 @@ export interface DealDocument extends Document {
 	// imageUrls: string[];
 	price: String;
 	basisPrice: String;
-	// expirationDate: Date;
+	expirationDate: Date;
 	url: string;
 	// description: string;
 	// category: string;
@@ -16,7 +16,7 @@ const DealSchema: Schema = new Schema({
 	// imageUrls: [{ type: String, required: true }],
 	price: { type: String, required: true },
 	basisPrice: { type: String, required: true },
-	// expirationDate: { type: Date, required: true },
+	expirationDate: { type: Date, required: true },
 	url: { type: String, required: true },
 	// description: { type: String, required: true },
 	// category: { type: String, required: true },
